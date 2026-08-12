@@ -298,11 +298,16 @@ var EARLY_ACCESS_EMAIL = ["vpatlaunchrescue", "gmail.com"].join("@");
       document.getElementById("done").hidden = false;
       // mailto keeps the data in the visitor's own mail client. No endpoint,
       // no third-party processor, no storage on our side until they hit send.
-      location.href = "mailto:" + EARLY_ACCESS_EMAIL
+      var href = "mailto:" + EARLY_ACCESS_EMAIL
         + "?subject=" + encodeURIComponent("Early access - VPAT/ACR Launch Rescue (EUR 99)")
         + "&body=" + encodeURIComponent(
             "Please reserve early access for: " + addr
             + "\n\nOptional, and genuinely useful: who asked you for a VPAT, and what did they ask for?\n\n");
+      // Deferred so the B3.5 analytics beacon leaves the page first. Navigating
+      // to a mailto: immediately can abort an in-flight request in some
+      // browsers, which would silently lose the second-most important signal
+      // in the experiment.
+      setTimeout(function () { location.href = href; }, 250);
     } else {
       document.getElementById("notopen").hidden = false;
     }
