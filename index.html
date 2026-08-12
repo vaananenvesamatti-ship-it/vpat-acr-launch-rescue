@@ -226,8 +226,10 @@
 // FOUNDER CONFIG — set these two lines, redeploy, and the experiment is
 // fully instrumented. Both are safe to publish: the GoatCounter site code
 // is public by design and needs no secret key in client code.
-var GOATCOUNTER_CODE   = "";  // e.g. "mintworks-vpat"  (from your GoatCounter URL)
-var EARLY_ACCESS_EMAIL = "";  // e.g. "earlyaccess@example.com"
+var GOATCOUNTER_CODE   = "vpatlaunchrescue";
+// Assembled at runtime rather than written literally: this page is public and
+// plain addresses in source get harvested. Functionally identical.
+var EARLY_ACCESS_EMAIL = ["vpatlaunchrescue", "gmail.com"].join("@");
 // =====================================================================
 //
 // Event map is frozen in ../instrumentation.md. B4 has NO browser event by
