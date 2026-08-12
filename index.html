@@ -220,14 +220,50 @@
 </div>
 
 <script>
-// Local-only event marking. No third-party trackers, no cookies, no identifiers.
-// Aggregate counts only; see ../analytics-plan.md for the deployment-time approach.
+// =====================================================================
+// MINTWORKS INSTRUMENTATION — GoatCounter. Cookieless, aggregate, no IDs.
+//
+// FOUNDER CONFIG — set these two lines, redeploy, and the experiment is
+// fully instrumented. Both are safe to publish: the GoatCounter site code
+// is public by design and needs no secret key in client code.
+var GOATCOUNTER_CODE   = "";  // e.g. "mintworks-vpat"  (from your GoatCounter URL)
+var EARLY_ACCESS_EMAIL = "";  // e.g. "earlyaccess@example.com"
+// =====================================================================
+//
+// Event map is frozen in ../instrumentation.md. B4 has NO browser event by
+// design: a page cannot know whether the visitor pressed Send.
+//
+// Test isolation: append ?test=1 to any URL. Every pageview and event is
+// then prefixed "TEST-" and is excluded from the experiment.
 (function () {
+  var TEST     = /[?&]test=1(&|$)/.test(location.search);
+  var PREFIX   = TEST ? "TEST-" : "";
+  var EMBEDDED = (window.top !== window.self);
+
+  // Configure GoatCounter before count.js loads.
+  window.goatcounter = {
+    no_onload: EMBEDDED,                       // never count an iframed page as a view
+    path: function (p) { return PREFIX + p; }
+  };
+  if (GOATCOUNTER_CODE) {
+    var s = document.createElement("script");
+    s.async = true;
+    s.src = "//gc.zgo.at/count.js";
+    s.setAttribute("data-goatcounter",
+      "https://" + GOATCOUNTER_CODE + ".goatcounter.com/count");
+    document.head.appendChild(s);
+  }
+
   var seen = {};
   function mark(name) {
     if (seen[name]) return; seen[name] = 1;
-    try { (window.plausible || function(){})(name); } catch (e) {}
-    try { console.info("[DIGITAL-003] " + name); } catch (e) {}
+    var n = PREFIX + name;
+    try {
+      if (window.goatcounter && typeof window.goatcounter.count === "function") {
+        window.goatcounter.count({ path: n, title: n, event: true });
+      }
+    } catch (e) {}
+    try { console.info("[MW] " + n); } catch (e) {}
   }
 
   // B2 — meaningful engagement
@@ -246,15 +282,6 @@
     a.scrollIntoView({ behavior: "smooth", block: "nearest" });
     document.getElementById("email").focus();
   });
-
-  // ---------------------------------------------------------------------------
-  // FOUNDER CONFIG — set this to the address that should receive early-access
-  // reservations, then redeploy. Until it is set, B4 is still COUNTED but no
-  // personal data is collected or transmitted anywhere.
-  // Using a dedicated address (not a personal one) is strongly recommended,
-  // because this page is public and addresses in page source get harvested.
-  var EARLY_ACCESS_EMAIL = ""; // e.g. "earlyaccess@yourdomain.com"
-  // ---------------------------------------------------------------------------
 
   // B3.5 — reservation mechanism OPENED. This is NOT B4.
   // B4 is counted manually, only from reservation emails actually received.
