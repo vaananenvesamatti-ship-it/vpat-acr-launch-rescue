@@ -1,0 +1,185 @@
+<!--
+  THROWAWAY PROOF OF CONCEPT — NOT A PRODUCT, NOT FOR SALE, NOT FOR DISTRIBUTION.
+
+  Built solely to measure the build cost of claim-versus-evidence enforcement in a
+  local-first, backendless form, for the DD-01A format-economics challenge.
+  See ../format-economics-challenge.md.
+
+  Scope deliberately limited to 5 representative WCAG criteria (Part I cap).
+  No visual polish. No full VPAT coverage. No DOCX export. Not a sellable package.
+
+  Criterion identifiers and short names below are factual references to W3C WCAG 2.1
+  success criteria. Full normative text is NOT reproduced (see licensing note in the
+  challenge document); a real product would link to w3.org rather than embed the text.
+-->
+<meta charset="utf-8">
+<title>PoC — claim/evidence binding</title>
+<style>
+  body { font: 15px/1.5 system-ui, sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+  fieldset { border: 1px solid #999; margin: 0 0 1rem; padding: .75rem 1rem; }
+  legend { font-weight: 600; }
+  .crit { border-top: 1px solid #ddd; padding: .75rem 0; }
+  .ev { margin: .5rem 0 0 1.5rem; padding: .5rem .75rem; border-left: 3px solid #888; display: none; }
+  .ev.show { display: block; }
+  .ev label { display: block; margin: .35rem 0; }
+  .ev input, .ev select, .ev textarea { width: 100%; box-sizing: border-box; }
+  .bad { color: #a00; font-weight: 600; }
+  .ok { color: #060; font-weight: 600; }
+  #summary { background: #f4f4f4; padding: 1rem; }
+  button { margin-right: .5rem; }
+</style>
+
+<h1>Demo — claim and evidence binding</h1>
+<p><strong>This is a five-criterion demonstration of the mechanism, not the product.</strong>
+Set a status to <em>Supports</em> below and it will refuse the claim until you record the
+test behind it. The full version would cover the criteria applicable to your chosen
+edition, with guidance, evidence reuse, and export. Nothing here is sent anywhere — it
+runs entirely in your browser.</p>
+
+<fieldset>
+  <legend>1. Intake</legend>
+  <label>Product / scope <input id="scope" placeholder="e.g. Acme Web App v4, customer-facing screens"></label>
+  <label>Edition requested
+    <select id="edition">
+      <option>WCAG (2.1 AA)</option><option>Section 508</option><option>EU (EN 301 549)</option><option>INT</option>
+    </select>
+  </label>
+  <label>Internal owner <input id="owner" placeholder="name / role"></label>
+</fieldset>
+
+<fieldset>
+  <legend>2. Criteria — a positive claim requires evidence</legend>
+  <div id="crits"></div>
+</fieldset>
+
+<fieldset>
+  <legend>3. Readiness</legend>
+  <div id="summary">…</div>
+  <p>
+    <button onclick="save()">Save</button>
+    <button onclick="exportJSON()">Export project (JSON)</button>
+    <button onclick="exportCSV()">Export evidence register (CSV)</button>
+    <button onclick="document.getElementById('imp').click()">Import</button>
+    <input type="file" id="imp" hidden accept=".json" onchange="importJSON(this)">
+  </p>
+</fieldset>
+
+<script>
+// 5 representative criteria. A real build carries ~50 for WCAG 2.1 A+AA.
+const CRITERIA = [
+  { id: "1.1.1", name: "Non-text Content", level: "A" },
+  { id: "1.4.3", name: "Contrast (Minimum)", level: "AA" },
+  { id: "2.1.1", name: "Keyboard", level: "A" },
+  { id: "2.4.7", name: "Focus Visible", level: "AA" },
+  { id: "4.1.2", name: "Name, Role, Value", level: "A" }
+];
+
+// VPAT conformance vocabulary. "Supports"/"Partially Supports" are positive claims
+// and are the ones that require evidence.
+const STATUSES = ["Not Evaluated", "Supports", "Partially Supports", "Does Not Support", "Not Applicable"];
+const NEEDS_EVIDENCE = ["Supports", "Partially Supports"];
+const EV_FIELDS = [
+  ["method", "Test method", "select", ["", "Manual + assistive tech", "Automated scan", "Code inspection", "Vendor statement"]],
+  ["date", "Test date", "date"],
+  ["result", "Result observed", "text"],
+  ["ref", "Evidence reference", "text"],
+  ["scope", "Scope tested", "text"]
+];
+
+let state = { intake: {}, criteria: {} };
+
+function render() {
+  document.getElementById("crits").innerHTML = CRITERIA.map(c => {
+    const st = state.criteria[c.id] || {};
+    const needs = NEEDS_EVIDENCE.includes(st.status);
+    return `<div class="crit">
+      <strong>${c.id} ${c.name}</strong> <small>(${c.level})</small>
+      <select onchange="setStatus('${c.id}', this.value)">
+        ${STATUSES.map(s => `<option ${st.status === s ? "selected" : ""}>${s}</option>`).join("")}
+      </select>
+      <span id="flag-${c.id}"></span>
+      <div class="ev ${needs ? "show" : ""}">
+        ${EV_FIELDS.map(([k, label, type, opts]) => {
+          const v = (st.evidence || {})[k] || "";
+          const input = type === "select"
+            ? `<select onchange="setEv('${c.id}','${k}',this.value)">${opts.map(o => `<option ${v === o ? "selected" : ""}>${o}</option>`).join("")}</select>`
+            : `<input type="${type}" value="${v}" oninput="setEv('${c.id}','${k}',this.value)">`;
+          return `<label>${label}${input}</label>`;
+        }).join("")}
+      </div>
+    </div>`;
+  }).join("");
+  CRITERIA.forEach(c => {
+    const el = document.getElementById("flag-" + c.id);
+    const g = gapsFor(c.id);
+    el.className = g.length ? "bad" : "ok";
+    el.textContent = g.length ? " ✗ " + g.join("; ") : (state.criteria[c.id]?.status ? " ✓" : "");
+  });
+  summarise();
+}
+
+// THE ENFORCEMENT RULE — the entire differentiator, in one function.
+function gapsFor(id) {
+  const st = state.criteria[id];
+  if (!st || !st.status || st.status === "Not Evaluated") return [];
+  if (!NEEDS_EVIDENCE.includes(st.status)) return [];
+  const ev = st.evidence || {};
+  const missing = EV_FIELDS.filter(([k]) => !ev[k]).map(([, label]) => label.toLowerCase());
+  return missing.length ? ["unsupported claim: missing " + missing.join(", ")] : [];
+}
+
+function summarise() {
+  const evaluated = CRITERIA.filter(c => state.criteria[c.id]?.status && state.criteria[c.id].status !== "Not Evaluated");
+  const unsupported = CRITERIA.filter(c => gapsFor(c.id).length);
+  const untested = CRITERIA.length - evaluated.length;
+  const weakMethod = evaluated.filter(c => (state.criteria[c.id].evidence || {}).method === "Automated scan"
+    && NEEDS_EVIDENCE.includes(state.criteria[c.id].status));
+  let verdict;
+  if (unsupported.length) verdict = "INCOMPLETE — positive claims without evidence";
+  else if (untested) verdict = "NEEDS_TESTING — criteria not evaluated";
+  else if (weakMethod.length) verdict = "SPECIALIST_REVIEW_RECOMMENDED — claims rest on automated scans alone";
+  else verdict = "READY_FOR_INTERNAL_REVIEW";
+  document.getElementById("summary").innerHTML =
+    `<strong>${verdict}</strong><br>evaluated ${evaluated.length}/${CRITERIA.length} ·
+     unsupported claims ${unsupported.length} · not evaluated ${untested} · scan-only claims ${weakMethod.length}
+     <br><small>Not a certification or a conformance guarantee.</small>`;
+}
+
+function setStatus(id, v) { state.criteria[id] = state.criteria[id] || {}; state.criteria[id].status = v; render(); }
+function setEv(id, k, v) {
+  state.criteria[id].evidence = state.criteria[id].evidence || {};
+  state.criteria[id].evidence[k] = v; render();
+}
+function readIntake() { ["scope", "edition", "owner"].forEach(k => state.intake[k] = document.getElementById(k).value); }
+function save() { readIntake(); localStorage.setItem("poc", JSON.stringify(state)); alert("saved locally"); }
+function load() {
+  const s = localStorage.getItem("poc"); if (!s) return;
+  state = JSON.parse(s);
+  ["scope", "edition", "owner"].forEach(k => { if (state.intake[k]) document.getElementById(k).value = state.intake[k]; });
+}
+function dl(name, type, data) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([data], { type })); a.download = name; a.click();
+}
+function exportJSON() { readIntake(); dl("acr-project.json", "application/json", JSON.stringify(state, null, 2)); }
+function exportCSV() {
+  readIntake();
+  const rows = [["criterion", "name", "level", "status", ...EV_FIELDS.map(f => f[0]), "gaps"]];
+  CRITERIA.forEach(c => {
+    const st = state.criteria[c.id] || {}, ev = st.evidence || {};
+    rows.push([c.id, c.name, c.level, st.status || "Not Evaluated",
+      ...EV_FIELDS.map(f => ev[f[0]] || ""), gapsFor(c.id).join(" | ")]);
+  });
+  dl("evidence-register.csv", "text/csv",
+    rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n"));
+}
+function importJSON(input) {
+  const f = input.files[0]; if (!f) return;
+  f.text().then(t => { state = JSON.parse(t); load2(); });
+}
+function load2() {
+  ["scope", "edition", "owner"].forEach(k => { if (state.intake[k]) document.getElementById(k).value = state.intake[k]; });
+  render();
+}
+load(); render();
+</script>

@@ -1,0 +1,284 @@
+<!doctype html>
+<!--
+  DIGITAL-003 BEHAVIORAL EXPERIMENT ARTIFACT — NOT A PRODUCT, NOT A STOREFRONT.
+
+  Purpose: measure purchase intent (B3/B4) for a proposed EUR 99 product that does not
+  exist yet. No payment is taken. No checkout exists. See ../preregistration.md.
+
+  Constraints honoured: no fabricated testimonials, counts, ratings, scarcity or
+  endorsements; price shown plainly; early-access status disclosed immediately after the
+  CTA; no certification or compliance guarantees claimed.
+
+  Zero dependencies. No framework, no build step, no network calls, no trackers.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VPAT / ACR Launch Rescue — for SaaS teams asked for accessibility documentation</title>
+<meta name="description" content="Your customer asked for a VPAT or ACR. Know what to test, what to document, what you can safely claim, and what to do next — without spending days piecing the process together.">
+<meta name="robots" content="index,follow">
+<style>
+  :root{
+    --bg:#fbfbfa; --fg:#17181a; --muted:#5b5f66; --line:#e0e0dd;
+    --accent:#1f4fd8; --accent-fg:#fff; --panel:#fff; --ok:#0a6b3d; --warn:#8a5a00;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#121316; --fg:#eceef1; --muted:#a4a9b2; --line:#2b2d32;
+      --accent:#7aa0ff; --accent-fg:#0d0f13; --panel:#191b1f; --ok:#5fd39a; --warn:#e0b25c;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#121316; --fg:#eceef1; --muted:#a4a9b2; --line:#2b2d32;
+    --accent:#7aa0ff; --accent-fg:#0d0f13; --panel:#191b1f; --ok:#5fd39a; --warn:#e0b25c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif}
+  .wrap{max-width:720px;margin:0 auto;padding:0 20px}
+  header{padding:56px 0 8px}
+  h1{font-size:clamp(1.9rem,5vw,2.7rem);line-height:1.15;margin:0 0 .4em;letter-spacing:-.02em}
+  h2{font-size:1.25rem;margin:2.4em 0 .6em;letter-spacing:-.01em}
+  .lede{font-size:1.15rem;color:var(--muted);margin:0 0 1.6em}
+  .who{border-left:3px solid var(--accent);padding:.5em 0 .5em 1em;margin:0 0 2em;color:var(--muted)}
+  ul{padding-left:1.2em}
+  li{margin:.35em 0}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;margin:1.4em 0}
+  .cta-block{margin:2.6em 0;padding:24px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+  .price{font-size:2rem;font-weight:700;margin:0 0 .1em}
+  .price small{font-size:.9rem;font-weight:400;color:var(--muted);display:block;margin-top:.2em}
+  .btn{display:inline-block;background:var(--accent);color:var(--accent-fg);border:0;
+       font:inherit;font-weight:600;padding:14px 26px;border-radius:8px;cursor:pointer;margin-top:14px}
+  .btn:hover{filter:brightness(1.08)}
+  .btn:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible{
+       outline:3px solid var(--accent);outline-offset:2px}
+  .after{display:none;margin-top:18px;padding:16px;border:1px solid var(--line);
+         border-radius:8px;background:var(--bg)}
+  .after.show{display:block}
+  label{display:block;margin:.8em 0 .3em;font-weight:600}
+  input[type=email]{width:100%;padding:11px;border:1px solid var(--line);border-radius:6px;
+                    background:var(--bg);color:var(--fg);font:inherit}
+  .fine{font-size:.87rem;color:var(--muted)}
+  .not{border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:6px;
+       padding:14px 18px;margin:1.4em 0}
+  .not strong{color:var(--warn)}
+  table{border-collapse:collapse;width:100%;margin:1em 0;font-size:.94rem}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-weight:600}
+  footer{margin:64px 0 40px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem}
+  iframe{width:100%;height:560px;border:1px solid var(--line);border-radius:8px;background:#fff}
+  .skip{position:absolute;left:-9999px}
+  .skip:focus{left:8px;top:8px;position:fixed;background:var(--panel);padding:10px 14px;
+              border:1px solid var(--line);border-radius:6px;z-index:10}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+
+<header>
+  <h1>Your customer asked for a VPAT.</h1>
+  <p class="lede">Know what to test, what to document, what you can safely claim, and what
+  to do next — without spending days piecing the process together.</p>
+</header>
+
+<main id="main">
+
+  <p class="who"><strong>Who this is for:</strong> a 5–200 person SaaS or software team that
+  has just been asked for a VPAT or Accessibility Conformance Report by a customer,
+  university, enterprise procurement team, or government buyer — and has no accessibility
+  specialist on staff.</p>
+
+  <h2>The situation</h2>
+  <p>A deal is moving. Procurement sends a line item asking for your VPAT or ACR. Nobody on
+  the team has produced one before.</p>
+  <p>So the questions start. Which of the four editions did they actually mean? What counts
+  as "the product" — just the app, or onboarding and the help centre too? Can we write
+  <em>Supports</em> for something we believe is fine but never tested? What happens if we
+  get it wrong?</p>
+  <p>You did not plan to spend this week becoming an accessibility documentation expert.
+  You planned to close the deal.</p>
+
+  <h2>What this is</h2>
+  <p>A downloadable application that turns the request into a worked process: it tells you
+  what to test, keeps the evidence next to each claim, and shows you what is still missing
+  before you send anything.</p>
+
+  <table>
+    <caption class="fine" style="text-align:left;margin-bottom:.5em">What it does</caption>
+    <tbody>
+      <tr><th scope="row">Orientation</th><td>Work out what was actually requested, which edition applies, and what is in scope — before you start testing.</td></tr>
+      <tr><th scope="row">Guided testing</th><td>For each criterion, what to check and what counts as adequate evidence.</td></tr>
+      <tr><th scope="row">Evidence binding</th><td>A positive conformance claim cannot be recorded without the test behind it: method, date, result, reference, scope.</td></tr>
+      <tr><th scope="row">Reusable evidence</th><td>One keyboard-navigation test can support several criteria at once, applied in a single action.</td></tr>
+      <tr><th scope="row">Gap detection</th><td>Unsupported claims, untested criteria, incomplete sections, and claims resting on automated scans alone.</td></tr>
+      <tr><th scope="row">Readiness summary</th><td>Whether the project is ready for internal review, still needs testing, or should go to a specialist.</td></tr>
+      <tr><th scope="row">Runs locally</th><td>No account, no upload, no server. Your product's accessibility findings stay on your machine.</td></tr>
+      <tr><th scope="row">Export</th><td>Structured project data and an evidence register you keep, so the next version is not a fresh start.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>See the mechanism</h2>
+  <p>Below is a working demonstration of the core idea, limited to five criteria. Set a
+  status to <em>Supports</em> and it will refuse to accept the claim until you record what
+  test produced it.</p>
+  <p class="fine"><strong>This is a demo of the mechanism, not the product.</strong> The
+  full version covers the applicable criteria for your chosen edition, with guidance,
+  evidence reuse, and export.</p>
+  <iframe src="demo.html" title="Interactive demonstration: claim and evidence binding across five criteria" loading="lazy"></iframe>
+
+  <h2>Why not just ask ChatGPT?</h2>
+  <p>Ask it, genuinely — it explains VPATs well, and that part is free.</p>
+  <p>What it will not do is refuse you. Ask a model to draft a conformance claim and it
+  drafts one, because that is what you asked for. It does not know what you tested, does
+  not keep the evidence, does not remember the project next week, and does not tell you
+  that eleven of your claims have nothing behind them.</p>
+  <p>The difference is not knowledge. It is structure and state.</p>
+
+  <h2>Why not hire a specialist immediately?</h2>
+  <p>Sometimes you should, and this tool will tell you when it thinks so.</p>
+  <p>But a specialist engagement starts faster and costs less when you arrive with scope
+  defined, testing already done where you could do it, and evidence organised — instead of
+  paying someone to work that out. Plenty of requests also turn out narrower than they
+  first looked. This helps you find out which situation you are in.</p>
+
+  <div class="not">
+    <p style="margin-top:0"><strong>What this is not.</strong></p>
+    <ul style="margin-bottom:0">
+      <li>It does not certify accessibility, and no self-produced ACR does.</li>
+      <li>It does not guarantee compliance with any law or standard.</li>
+      <li>It does not replace a qualified audit where one is genuinely required.</li>
+      <li>It is not legal advice.</li>
+      <li>It cannot guarantee that a procurement team will accept your ACR.</li>
+      <li>It does not make an inaccessible product accessible. It documents what is true.</li>
+    </ul>
+  </div>
+
+  <div class="cta-block">
+    <p class="price">€99 <small>one-time. No subscription, no account.</small></p>
+    <button class="btn" id="cta" aria-describedby="cta-note">Get early access — €99</button>
+    <p id="cta-note" class="fine" style="margin-bottom:0">One payment. Free updates when
+    the standards change.</p>
+
+    <div class="after" id="after" role="status" aria-live="polite">
+      <p style="margin-top:0"><strong>Before anything else: this is not finished yet, and
+      no payment is being taken today.</strong></p>
+      <p>Mintworks is deciding whether to build this, and is measuring genuine interest
+      before spending the weeks it would take. Leaving your email reserves early access at
+      €99 and tells us the demand is real. You will be contacted once, when there is
+      something to buy or when the project is dropped. If it is dropped, we will say so.</p>
+      <form id="form">
+        <label for="email">Email for early access</label>
+        <input type="email" id="email" name="email" required autocomplete="email"
+               placeholder="you@company.com">
+        <button class="btn" type="submit">Reserve early access</button>
+      </form>
+      <p class="fine" id="privacy">Your address is used only to contact you about this
+      product, is never sold or shared, and is deleted on request or if the project is
+      dropped. One email, once. No tracking, no newsletter.</p>
+      <p class="fine" id="done" hidden><strong>One more step — your mail client should have
+      opened with a short message ready to go. Please press send.</strong> Nothing is
+      recorded until that email actually arrives; we deliberately don't capture anything
+      from this page. If no mail client opened, just email us directly and we'll add you.</p>
+      <p class="fine" id="notopen" hidden><strong>Reservations aren't open yet.</strong>
+      Noted that you're interested — that signal is exactly what we're measuring, and it
+      counted.</p>
+    </div>
+  </div>
+
+  <h2>Honest comparison</h2>
+  <p>Other options exist and some are cheaper. If one of them fits better, use it.</p>
+  <table>
+    <thead><tr><th scope="col">If you…</th><th scope="col">Then</th></tr></thead>
+    <tbody>
+      <tr><td>already know your conformance status and just need the document formatted</td><td>a form-filling tool will be faster and cheaper</td></tr>
+      <tr><td>already have an audit report and want it turned into an ACR</td><td>an audit-to-VPAT platform will suit you</td></tr>
+      <tr><td>want to read your way through the process yourself</td><td>ITI publishes free training modules, and section508.gov has an official how-to</td></tr>
+      <tr><td>have never done this, do not yet know what to test, and need the evidence organised</td><td>that gap is what this is for</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Not sure you even need one?</h2>
+  <p>Plenty of requests turn out narrower than they look, and some vendors are asked for a
+  VPAT they have no obligation to produce. We built a free four-question tool that will
+  tell you when the answer is "you don't need this" — and it says that often.</p>
+  <p><a href="need-vpat.html" id="tool-link"><strong>Do I actually need a VPAT? →</strong></a>
+  <span class="fine">Free, no email required, runs in your browser.</span></p>
+
+</main>
+
+<footer>
+  <p><strong>Mintworks</strong> — an early-access validation page for a product under
+  consideration. Nothing on this page is a certification, a legal opinion, or a compliance
+  guarantee.</p>
+  <p>VPAT® is a registered service mark of the Information Technology Industry Council
+  (ITI). This project is independent and is not affiliated with, endorsed by, or sponsored
+  by ITI.</p>
+</footer>
+
+</div>
+
+<script>
+// Local-only event marking. No third-party trackers, no cookies, no identifiers.
+// Aggregate counts only; see ../analytics-plan.md for the deployment-time approach.
+(function () {
+  var seen = {};
+  function mark(name) {
+    if (seen[name]) return; seen[name] = 1;
+    try { (window.plausible || function(){})(name); } catch (e) {}
+    try { console.info("[DIGITAL-003] " + name); } catch (e) {}
+  }
+
+  // B2 — meaningful engagement
+  var fired = false;
+  addEventListener("scroll", function () {
+    if (fired) return;
+    var d = document.documentElement;
+    if ((d.scrollTop + innerHeight) / d.scrollHeight >= 0.6) { fired = true; mark("B2_engaged"); }
+  }, { passive: true });
+
+  // B3 — CTA click with the price visible. Primary signal.
+  document.getElementById("cta").addEventListener("click", function () {
+    mark("B3_cta_click");
+    var a = document.getElementById("after");
+    a.classList.add("show");
+    a.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    document.getElementById("email").focus();
+  });
+
+  // ---------------------------------------------------------------------------
+  // FOUNDER CONFIG — set this to the address that should receive early-access
+  // reservations, then redeploy. Until it is set, B4 is still COUNTED but no
+  // personal data is collected or transmitted anywhere.
+  // Using a dedicated address (not a personal one) is strongly recommended,
+  // because this page is public and addresses in page source get harvested.
+  var EARLY_ACCESS_EMAIL = ""; // e.g. "earlyaccess@yourdomain.com"
+  // ---------------------------------------------------------------------------
+
+  // B3.5 — reservation mechanism OPENED. This is NOT B4.
+  // B4 is counted manually, only from reservation emails actually received.
+  // Opening a mail composer is not a reservation: the visitor still has to send it.
+  document.getElementById("form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    mark("B3_5_composer_opened");
+    var addr = document.getElementById("email").value;
+    this.hidden = true;
+    document.getElementById("privacy").hidden = true;
+    if (EARLY_ACCESS_EMAIL) {
+      document.getElementById("done").hidden = false;
+      // mailto keeps the data in the visitor's own mail client. No endpoint,
+      // no third-party processor, no storage on our side until they hit send.
+      location.href = "mailto:" + EARLY_ACCESS_EMAIL
+        + "?subject=" + encodeURIComponent("Early access - VPAT/ACR Launch Rescue (EUR 99)")
+        + "&body=" + encodeURIComponent(
+            "Please reserve early access for: " + addr
+            + "\n\nOptional, and genuinely useful: who asked you for a VPAT, and what did they ask for?\n\n");
+    } else {
+      document.getElementById("notopen").hidden = false;
+    }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!doctype html>
+<!--
+  DIGITAL-003B free acquisition asset (Part M). Minimal by design.
+  Neutrality is the point: most branches do NOT lead to the paid product.
+  No data leaves the browser. No storage. No accounts.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Do I actually need a VPAT? — a straight answer in four questions</title>
+<meta name="description" content="A neutral decision tool for software vendors asked for a VPAT or Accessibility Conformance Report. Four questions. Often the answer is that you don't need one.">
+<style>
+  :root{--bg:#fbfbfa;--fg:#17181a;--muted:#5b5f66;--line:#e0e0dd;--accent:#1f4fd8;--accent-fg:#fff;--panel:#fff}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121316;--fg:#eceef1;--muted:#a4a9b2;--line:#2b2d32;--accent:#7aa0ff;--accent-fg:#0d0f13;--panel:#191b1f}}
+  :root[data-theme="dark"]{--bg:#121316;--fg:#eceef1;--muted:#a4a9b2;--line:#2b2d32;--accent:#7aa0ff;--accent-fg:#0d0f13;--panel:#191b1f}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif}
+  .wrap{max-width:660px;margin:0 auto;padding:48px 20px 80px}
+  h1{font-size:clamp(1.6rem,4.5vw,2.2rem);line-height:1.2;margin:0 0 .3em;letter-spacing:-.02em}
+  .lede{color:var(--muted);margin:0 0 2em}
+  fieldset{border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:0 0 18px;background:var(--panel)}
+  legend{font-weight:600;padding:0 6px}
+  label{display:block;margin:.5em 0;cursor:pointer}
+  input[type=radio]{margin-right:.5em}
+  .out{margin-top:26px;padding:22px;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;background:var(--panel);display:none}
+  .out.show{display:block}
+  .out h2{margin:0 0 .4em;font-size:1.2rem}
+  .btn{display:inline-block;background:var(--accent);color:var(--accent-fg);font-weight:600;text-decoration:none;padding:12px 22px;border-radius:8px;margin-top:12px}
+  .btn:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .fine{font-size:.88rem;color:var(--muted)}
+  footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+  .skip{position:absolute;left:-9999px}.skip:focus{left:8px;top:8px;position:fixed;background:var(--panel);padding:10px 14px;border:1px solid var(--line);border-radius:6px;z-index:10}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+<h1>Do I actually need a VPAT?</h1>
+<p class="lede">Four questions. There's a fair chance the answer is no — in which case this
+page will tell you so and stop, rather than selling you something.</p>
+
+<main id="main">
+<form id="q">
+  <fieldset>
+    <legend>1. Who asked you for it?</legend>
+    <label><input type="radio" name="who" value="gov"> A government body, or a contractor selling to one</label>
+    <label><input type="radio" name="who" value="edu"> A university, college, or school district</label>
+    <label><input type="radio" name="who" value="ent"> A large enterprise's procurement or vendor-review team</label>
+    <label><input type="radio" name="who" value="smb"> A small business or an individual customer</label>
+    <label><input type="radio" name="who" value="none"> Nobody has asked — I'm looking into it proactively</label>
+  </fieldset>
+
+  <fieldset>
+    <legend>2. What exactly did they ask for?</legend>
+    <label><input type="radio" name="what" value="vpat"> A VPAT or ACR, named specifically</label>
+    <label><input type="radio" name="what" value="wcag"> "WCAG conformance" or "Section 508 compliance", without naming a document</label>
+    <label><input type="radio" name="what" value="vague"> Something vague about accessibility</label>
+    <label><input type="radio" name="what" value="unsure"> I'm not sure — it was one line in a longer questionnaire</label>
+  </fieldset>
+
+  <fieldset>
+    <legend>3. Has your product's accessibility ever been tested?</legend>
+    <label><input type="radio" name="test" value="audit"> Yes — a formal audit by an accessibility specialist</label>
+    <label><input type="radio" name="test" value="some"> Some internal testing, or automated scans</label>
+    <label><input type="radio" name="test" value="never"> Never</label>
+  </fieldset>
+
+  <fieldset>
+    <legend>4. Would being wrong be expensive?</legend>
+    <p class="fine" style="margin:.2em 0 .8em">For example: a contractual conformance commitment, a
+    regulated sector, a very large deal, or prior legal complaints about accessibility.</p>
+    <label><input type="radio" name="risk" value="high"> Yes — there's real contractual or legal exposure</label>
+    <label><input type="radio" name="risk" value="low"> Not especially — it's a procurement checkbox on a normal deal</label>
+  </fieldset>
+</form>
+
+<div class="out" id="out" role="status" aria-live="polite"></div>
+</main>
+
+<footer>
+<p>This is a neutral orientation tool, not legal advice and not an accessibility assessment.
+It cannot tell you whether your product conforms to anything — only what the request you
+received probably means and what a sensible next step looks like.</p>
+<p>VPAT® is a registered service mark of the Information Technology Industry Council (ITI).
+This project is independent and is not affiliated with, endorsed by, or sponsored by ITI.
+Built by <strong>Mintworks</strong>.</p>
+</footer>
+</div>
+
+<script>
+(function(){
+  var out = document.getElementById("out");
+  function val(n){ var e = document.querySelector('input[name="'+n+'"]:checked'); return e && e.value; }
+  function mark(n){ try{ (window.plausible||function(){})(n); }catch(e){} try{ console.info("[D003B] "+n); }catch(e){} }
+  var lastBranch = null;
+
+  function decide(){
+    var who = val("who"), what = val("what"), test = val("test"), risk = val("risk");
+    if (!who || !what || !test || !risk) return null;
+
+    // Branch A — probably not needed. Deliberately first and deliberately common.
+    if (who === "smb" || who === "none") return {
+      k: "not-needed",
+      h: "You probably don't need a VPAT right now.",
+      b: "<p>VPATs exist to answer a <em>buyer's</em> procurement question. Government, education "
+       + "and large-enterprise buyers ask for them; small businesses and consumers generally don't. "
+       + "If nobody with that kind of procurement process has asked, producing one is work without a reader.</p>"
+       + "<p>That is not the same as saying accessibility doesn't matter — your product may still have "
+       + "obligations under the ADA, the European Accessibility Act, or similar law regardless of any "
+       + "document. But the <em>document</em> is not what you need today.</p>"
+       + "<p class='fine'>Come back if a public-sector, education, or enterprise buyer asks.</p>"
+    };
+
+    // Branch B — clarify first. The request is ambiguous.
+    if (what === "vague" || what === "unsure" || what === "wcag") return {
+      k: "clarify",
+      h: "Ask them what they actually want before doing any work.",
+      b: "<p>What you've described isn't necessarily a VPAT request. \"WCAG conformance\" and general "
+       + "accessibility questions are sometimes satisfied by a short statement, and sometimes require a "
+       + "full Accessibility Conformance Report. Guessing wrong costs days either way.</p>"
+       + "<p>Send them this, more or less verbatim:</p>"
+       + "<blockquote class='fine' style='border-left:3px solid var(--line);margin:.6em 0;padding:.4em 0 .4em 1em'>"
+       + "\"To make sure we send the right thing — are you asking for a completed Accessibility Conformance "
+       + "Report using the VPAT template? If so, which edition: WCAG, Section 508, EU (EN 301 549), or INT? "
+       + "And which parts of the product should it cover?\"</blockquote>"
+       + "<p>Their answer determines everything else, and it usually arrives within a day.</p>"
+    };
+
+    // Branch D — specialist. Checked before self-service.
+    if (risk === "high" || (test === "never" && who === "gov")) return {
+      k: "specialist",
+      h: "This one is worth paying a specialist for.",
+      b: "<p>Where there's contractual or legal exposure — or a government buyer and no testing history — "
+       + "a self-produced report is the wrong tool. A signed conformance claim that turns out to be wrong is "
+       + "worse than a slow one, and procurement reviewers do check.</p>"
+       + "<p>Look for an accessibility firm that will do a manual audit with assistive technology and then "
+       + "produce the ACR from the findings. Expect roughly $1,250–$5,500 for the audit depending on scope, "
+       + "and ask specifically whether the report is included.</p>"
+       + "<p class='fine'>We have nothing to sell you here, and you should not buy a €99 tool for this situation.</p>"
+    };
+
+    // Branch C — self-service is reasonable. The only branch reaching the paid offer.
+    return {
+      k: "self-service",
+      h: "Self-service preparation is reasonable here.",
+      b: "<p>A named request from a real buyer, a normal commercial deal, and no unusual legal exposure — "
+       + "this is the situation where a vendor can sensibly do the work in-house, provided the claims are "
+       + "backed by actual testing rather than optimism.</p>"
+       + "<p>Two honest routes:</p><ul>"
+       + "<li><strong>Free:</strong> ITI publishes eight free VPAT training modules, and section508.gov has an "
+       + "official step-by-step guide. If you have time to read, start there — it costs nothing.</li>"
+       + "<li><strong>Faster:</strong> a guided workflow that tells you what to test, keeps the evidence next "
+       + "to each claim, and shows what's still missing before you send it.</li></ul>"
+       + "<p><a class='btn' href='index.html' id='togo'>See the €99 workflow →</a></p>"
+       + "<p class='fine'>One-time. Not a certification, not a compliance guarantee.</p>"
+    };
+  }
+
+  function render(){
+    var r = decide();
+    if (!r) return;
+    if (r.k !== lastBranch){ lastBranch = r.k; mark("tool_branch_" + r.k); }
+    out.innerHTML = "<h2>" + r.h + "</h2>" + r.b;
+    out.classList.add("show");
+    var g = document.getElementById("togo");
+    if (g) g.addEventListener("click", function(){ mark("tool_to_offer"); });
+  }
+
+  document.getElementById("q").addEventListener("change", render);
+  mark("tool_view");
+})();
+</script>
+</body>
+</html>
